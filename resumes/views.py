@@ -3,7 +3,7 @@ import json
 from rest_framework import generics, permissions
 from .models import Resume, Job
 from .serializers import ResumeSerializer
-from .utils import extract_text_from_pdf, extract_skills, match_skills
+from .utils import extract_text_from_pdf, extract_skills, match_skills, compute_similarity
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -30,6 +30,14 @@ class MatchJobView(APIView):
         resume_skills = json.loads(resume.skills)
         job_skills = json.loads(job.required_skills)
 
-        result = match_skills(resume_skills, job_skills)
+        skill_match = match_skills(resume_skills, job_skills)
 
-        return Response(result)
+        similarity_score = compute_similarity(
+            resume.extracted_text,
+            job.description
+        )
+
+        return Response({
+            "skill_match": skill_match,
+            "similarity_score": similarity_score
+        })
