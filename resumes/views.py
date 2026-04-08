@@ -3,7 +3,7 @@ import json
 from rest_framework import generics, permissions
 from .models import Resume, Job
 from .serializers import ResumeSerializer
-from .utils import extract_text_from_pdf, extract_skills, match_skills, compute_similarity
+from .utils import extract_text_from_pdf, extract_skills, match_skills, compute_similarity, rank_jobs
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -41,3 +41,12 @@ class MatchJobView(APIView):
             "skill_match": skill_match,
             "similarity_score": similarity_score
         })
+    
+class RecommendJobsView(APIView):
+    def get(self, request, resume_id):
+        resume = Resume.objects.get(id=resume_id)
+        jobs = Job.objects.all()
+
+        ranked_jobs = rank_jobs(resume, jobs)
+
+        return Response(ranked_jobs)

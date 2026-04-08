@@ -47,3 +47,19 @@ def compute_similarity(resume_text, job_description):
     similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])
 
     return float(similarity[0][0]) * 100
+
+def rank_jobs(resume, jobs):
+    results = []
+
+    for job in jobs:
+        score = compute_similarity(resume.extracted_text, job.description)
+
+        results.append({
+            "job_title": job.title,
+            "similarity_score": score
+        })
+
+    # sort highest first
+    results.sort(key=lambda x: x["similarity_score"], reverse=True)
+
+    return results
