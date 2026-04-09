@@ -63,3 +63,11 @@ def rank_jobs(resume, jobs):
     results.sort(key=lambda x: x["similarity_score"], reverse=True)
 
     return results
+
+def generate_suggestions(missing_skills):
+    suggestions = []
+
+    for skill in missing_skills:
+        suggestions.append(f"Consider learning {skill} to improve your match")
+
+    return suggestions

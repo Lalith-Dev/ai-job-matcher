@@ -3,7 +3,7 @@ import json
 from rest_framework import generics, permissions
 from .models import Resume, Job
 from .serializers import ResumeSerializer
-from .utils import extract_text_from_pdf, extract_skills, match_skills, compute_similarity, rank_jobs
+from .utils import extract_text_from_pdf, extract_skills, match_skills, compute_similarity, rank_jobs, generate_suggestions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -37,9 +37,14 @@ class MatchJobView(APIView):
             job.description
         )
 
+        suggestions = generate_suggestions(
+            skill_match["missing_skills"]
+        )
+
         return Response({
             "skill_match": skill_match,
-            "similarity_score": similarity_score
+            "similarity_score": similarity_score,
+            "suggestions": suggestions
         })
     
 class RecommendJobsView(APIView):
