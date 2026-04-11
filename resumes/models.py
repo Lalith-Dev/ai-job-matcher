@@ -8,6 +8,8 @@ class Resume(models.Model):
     extracted_text = models.TextField(blank=True)
     skills = models.TextField(blank=True)  # store as JSON string
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    organizations = models.TextField(blank=True)
+    locations = models.TextField(blank=True)
     
 class Job(models.Model):
     title = models.CharField(max_length=255)

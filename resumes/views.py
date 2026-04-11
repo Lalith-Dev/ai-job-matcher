@@ -3,7 +3,7 @@ import json
 from rest_framework import generics, permissions
 from .models import Resume, Job
 from .serializers import ResumeSerializer
-from .utils import extract_text_from_pdf, extract_skills, match_skills, compute_similarity, rank_jobs, generate_suggestions
+from .utils import extract_text_from_pdf, extract_skills, match_skills, compute_similarity, rank_jobs, generate_suggestions, extract_entities
 from rest_framework.views import APIView
 from rest_framework.response import Response
 

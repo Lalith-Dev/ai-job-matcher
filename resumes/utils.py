@@ -71,3 +71,21 @@ def generate_suggestions(missing_skills):
         suggestions.append(f"Consider learning {skill} to improve your match")
 
     return suggestions
+
+def extract_entities(text):
+    doc = nlp(text)
+
+    organizations = set()
+    locations = set()
+
+    for ent in doc.ents:
+        if ent.label_ == "ORG":
+            organizations.add(ent.text)
+
+        elif ent.label_ == "GPE":
+            locations.add(ent.text)
+
+    return {
+        "organizations": list(organizations),
+        "locations": list(locations)
+    }
