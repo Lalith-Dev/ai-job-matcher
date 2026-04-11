@@ -12,14 +12,24 @@ class ResumeUploadView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        file = self.request.FILES['file']
+        file = self.request.FILES["file"]
+
+        # Extract full text from PDF
         text = extract_text_from_pdf(file)
+
+        # Extract skills using NLP
         skills = extract_skills(text)
 
+        # Extract named entities
+        entities = extract_entities(text)
+
+        # Save everything into database
         serializer.save(
             user=self.request.user,
             extracted_text=text,
-            skills=json.dumps(skills)
+            skills=json.dumps(skills),
+            organizations=json.dumps(entities["organizations"]),
+            locations=json.dumps(entities["locations"])
         )
         
 class MatchJobView(APIView):
