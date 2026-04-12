@@ -14,7 +14,9 @@ class Resume(models.Model):
 class Job(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
-    required_skills = models.TextField()  # JSON list
+    required_skills = models.TextField()
+    min_experience = models.IntegerField(default=0)
+    required_education = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return self.title

@@ -2,6 +2,8 @@ import PyPDF2
 from .skills import SKILLS
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import spacy
+nlp = spacy.load("en_core_web_sm")
 
 
 def extract_text_from_pdf(file):
@@ -88,4 +90,45 @@ def extract_entities(text):
     return {
         "organizations": list(organizations),
         "locations": list(locations)
+    }
+    
+def calculate_candidate_ranking(resume, job):
+    import json
+
+    resume_skills = json.loads(resume.skills)
+    job_skills = json.loads(job.required_skills)
+
+    skill_match = match_skills(resume_skills, job_skills)
+    skills_score = skill_match["match_score"]
+
+    # Experience score
+    if job.min_experience == 0:
+        experience_score = 100
+    else:
+        experience_score = min(
+            (resume.experience_years / job.min_experience) * 100,
+            100
+        )
+
+    # Education score
+    education_list = json.loads(resume.education)
+
+    education_score = 0
+    for edu in education_list:
+        if job.required_education.lower() in edu.lower():
+            education_score = 100
+            break
+
+    # Weighted final score
+    final_rank_score = (
+        skills_score * 0.5 +
+        experience_score * 0.3 +
+        education_score * 0.2
+    )
+
+    return {
+        "final_rank_score": round(final_rank_score, 2),
+        "skills_score": round(skills_score, 2),
+        "experience_score": round(experience_score, 2),
+        "education_score": round(education_score, 2)
     }
