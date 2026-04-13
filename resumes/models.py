@@ -6,10 +6,12 @@ class Resume(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     file = models.FileField(upload_to='resumes/')
     extracted_text = models.TextField(blank=True)
-    skills = models.TextField(blank=True)  # store as JSON string
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+    skills = models.TextField(blank=True)
     organizations = models.TextField(blank=True)
     locations = models.TextField(blank=True)
+    experience_years = models.IntegerField(default=0)
+    education = models.TextField(blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
     
 class Job(models.Model):
     title = models.CharField(max_length=255)

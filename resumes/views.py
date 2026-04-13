@@ -3,7 +3,7 @@ import json
 from rest_framework import generics, permissions
 from .models import Resume, Job
 from .serializers import ResumeSerializer
-from .utils import extract_text_from_pdf, extract_skills, match_skills, compute_similarity, rank_jobs, generate_suggestions, extract_entities, calculate_candidate_ranking
+from .utils import extract_text_from_pdf, extract_skills, match_skills, compute_similarity, rank_jobs, generate_suggestions, extract_entities, calculate_candidate_ranking, extract_experience, extract_education
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -17,19 +17,27 @@ class ResumeUploadView(generics.CreateAPIView):
         # Extract full text from PDF
         text = extract_text_from_pdf(file)
 
-        # Extract skills using NLP
+        # Extract skills
         skills = extract_skills(text)
 
-        # Extract named entities
+        # Extract organizations and locations
         entities = extract_entities(text)
 
-        # Save everything into database
+        # Extract years of experience
+        experience_years = extract_experience(text)
+
+        # Extract education
+        education = extract_education(text)
+
+        # Save everything
         serializer.save(
             user=self.request.user,
             extracted_text=text,
             skills=json.dumps(skills),
             organizations=json.dumps(entities["organizations"]),
-            locations=json.dumps(entities["locations"])
+            locations=json.dumps(entities["locations"]),
+            experience_years=experience_years,
+            education=json.dumps(education)
         )
         
 class MatchJobView(APIView):
