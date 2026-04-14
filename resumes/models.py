@@ -9,7 +9,7 @@ class Resume(models.Model):
     skills = models.TextField(blank=True)
     organizations = models.TextField(blank=True)
     locations = models.TextField(blank=True)
-    experience_years = models.IntegerField(default=0)
+    experience_years = models.FloatField(default=0)
     education = models.TextField(blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     
