@@ -169,8 +169,9 @@ def extract_experience(text):
         "dec": 12, "december": 12,
     }
 
-    date_pattern = r'([A-Za-z]+)\s+(\d{4})\s*[–-]\s*([A-Za-z]+)\s+(\d{4}|present)'
+    date_pattern = r'([A-Za-z]+)\s+(\d{4})\s*[–—-]\s*([A-Za-z]+)\s+(\d{4}|present)'
     matches = re.findall(date_pattern, experience_text.lower())
+    print("Matched date ranges:", matches)
 
     for start_month, start_year, end_month, end_year in matches:
         try:
