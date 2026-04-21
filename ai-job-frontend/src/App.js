@@ -3,43 +3,55 @@ import axios from "axios";
 
 function App() {
   const [file, setFile] = useState(null);
+  const [jobDesc, setJobDesc] = useState("");
   const [result, setResult] = useState(null);
 
-  const handleUpload = async () => {
-    const token = "PASTE_YOUR_TOKEN_HERE";
-
+  const handleSubmit = async () => {
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("job_description", jobDesc);
 
-    const response = await axios.post(
-      "http://127.0.0.1:8000/api/resumes/upload/",
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      }
+    const res = await axios.post(
+      "http://127.0.0.1:8000/api/resumes/ats-analyze/",
+      formData
     );
 
-    setResult(response.data);
+    setResult(res.data);
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>AI Job Matcher</h2>
+    <div style={{ padding: 20 }}>
+      <h2>ATS Resume Analyzer</h2>
 
-      <input
-        type="file"
-        onChange={(e) => setFile(e.target.files[0])}
+      <textarea
+        rows="6"
+        placeholder="Paste Job Description"
+        onChange={(e) => setJobDesc(e.target.value)}
       />
 
-      <button onClick={handleUpload}>Upload Resume</button>
+      <br /><br />
+
+      <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+
+      <br /><br />
+
+      <button onClick={handleSubmit}>Analyze</button>
 
       {result && (
         <div>
-          <h3>Extracted Skills:</h3>
-          <pre>{result.skills}</pre>
+          <h3>Match Score: {result.match_score}</h3>
+
+          <h4>Matched Skills:</h4>
+          <pre>{JSON.stringify(result.skills_match.matched_skills, null, 2)}</pre>
+
+          <h4>Missing Skills:</h4>
+          <pre>{JSON.stringify(result.skills_match.missing_skills, null, 2)}</pre>
+
+          <h4>Experience:</h4>
+          <p>{result.experience_years} years</p>
+
+          <h4>Suggestions:</h4>
+          <pre>{JSON.stringify(result.suggestions, null, 2)}</pre>
         </div>
       )}
     </div>

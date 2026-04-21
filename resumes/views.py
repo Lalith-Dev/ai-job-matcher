@@ -6,6 +6,7 @@ from .serializers import ResumeSerializer
 from .utils import extract_text_from_pdf, extract_skills, match_skills, compute_similarity, rank_jobs, generate_suggestions, extract_entities, calculate_candidate_ranking, extract_experience, extract_education
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class ResumeUploadView(generics.CreateAPIView):
     serializer_class = ResumeSerializer
@@ -82,3 +83,35 @@ class CandidateRankingView(APIView):
         ranking = calculate_candidate_ranking(resume, job)
 
         return Response(ranking)
+    
+    
+class ATSAnalyzerView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        file = request.FILES.get("file")
+        job_description = request.data.get("job_description")
+
+        if not file or not job_description:
+            return Response({"error": "file and job_description required"}, status=400)
+
+        resume_text = extract_text_from_pdf(file)
+
+        resume_skills = extract_skills(resume_text)
+        job_skills = extract_skills(job_description)
+
+        skill_match = match_skills(resume_skills, job_skills)
+        similarity = compute_similarity(resume_text, job_description)
+
+        experience = extract_experience(resume_text)
+        education = extract_education(resume_text)
+
+        suggestions = generate_suggestions(skill_match["missing_skills"])
+
+        return Response({
+            "match_score": round(similarity, 2),
+            "skills_match": skill_match,
+            "experience_years": experience,
+            "education": education,
+            "suggestions": suggestions
+        })
